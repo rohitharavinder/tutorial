@@ -1,4 +1,4 @@
-name: Hello CI
+name: Hello Python
 run-name: Hello ${{ github.actor }}, this action was triggered by ${{ github.event_name }}
 on: [push, pull_request]
 jobs: 
@@ -9,6 +9,20 @@ jobs:
       - run: echo "Hello, I'm running on ${{ runner.os }}"
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: list files
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
         run: |
-          ls ${{ github.workspace }}
+          python-m pip install --upgrade pip
+          pip install -r requirements.txt
+      - run: echo "Hello CI" > hello.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with: 
+          name: hello
+          path: hello.txt
+          retention-days: 1
+          if-no-files-found: error
